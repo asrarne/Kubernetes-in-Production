@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web # external Services can also be used by Pods with this DNS name
+  labels:
+    app: widgetario # you should have one label to identify the application
+spec:
+  ports:
+    - port: 8080 # this is the port the Service listens on
+      targetPort: 80 # this is the target port
+  selector:
+    # you need a label selector which uniquely identifies the component
+    component: web # - it should match only one Pod
+  type: LoadBalancer 
+  # LoadBalancer means the Service can be accessed from outside Kubernetes
+  # In the cloud you'll get a public IP address for the Service
+  # On Docker Desktop you'll use the localhost address
+  # On k3s you'll get a private IP address on your network
+  # Other Kubernetes environments may not support LoadBalancer 
+  # - in that case use NodePort instead and specify the nodePort in the port list

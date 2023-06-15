@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-api-lb
+  labels:
+    app: widgetario
+spec:
+  ports:
+    - port: 8088
+      targetPort: 8080
+  selector:
+    app: widgetario
+    component: stock-api
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-api-np
+  labels:
+    app: widgetario
+spec:
+  ports:
+    - port: 8088
+      targetPort: 8080
+      nodePort: 30088
+  selector:
+    app: widgetario
+    component: stock-api
+  type: NodePort

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: products-api
+  # this is the DNS name of the Service - it will always have the same
+  # IP address, and the Service routes incoming traffic to a Pod IP address
+  labels:
+    app: widgetario
+    # this label is useful for operations - when you run lots of apps in your
+    # Kubernetes cluster, you need to identify which components are from which app
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      # the Service port and target Pod port are the same here, but you 
+      # can map them if they're different.
+  selector:
+    component: products-api
+    # this matches the API Pod - I could have included the app label
+    # but in my environment, this selector uniquely finds the Pod
+  type: ClusterIP
+  # ClusterIP means the DNS name for the Service resolves to an IP address
+  # which is only accessible within the cluster, so other Pods can reach it

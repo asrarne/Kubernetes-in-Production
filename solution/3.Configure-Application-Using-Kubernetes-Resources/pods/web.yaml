@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  labels: 
+    app: widgetario
+    component: web
+spec:
+  containers:
+    - name: app
+      image: widgetario/web:21.03
+      env:
+        - name: Widgetario__Theme
+          value: dark
+      volumeMounts:
+        - name: logging-config
+          mountPath: "/app/config"
+          readOnly: true
+        - name: api-config
+          mountPath: "/app/secrets"
+          readOnly: true
+  volumes:
+    - name: logging-config
+      configMap:
+        name: web-logging
+    - name: api-config
+      secret:
+        secretName: web-api

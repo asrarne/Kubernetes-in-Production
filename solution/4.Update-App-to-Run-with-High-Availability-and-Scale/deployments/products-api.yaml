@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-api
+  labels:
+    app: widgetario
+spec:
+  selector:
+    matchLabels:
+        app: widgetario
+        component: products-api
+  template:
+    metadata:
+      labels:
+        app: widgetario
+        component: products-api
+    spec:
+      containers:
+        - name: app
+          image: widgetario/products-api:21.03
+          volumeMounts:
+            - name: app-properties
+              mountPath: "/app/config"
+              readOnly: true
+            - name: db-properties
+              mountPath: "/app/config/db"
+              readOnly: true
+      volumes:
+        - name: app-properties
+          configMap:
+            name: products-api-properties
+        - name: db-properties
+          secret:
+            secretName: products-api-db

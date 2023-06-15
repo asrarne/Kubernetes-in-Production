@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: widgetario
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: widgetario
+      component: web
+  template:
+    metadata:
+      labels:
+        app: widgetario
+        component: web
+    spec:
+      # doesn't use kubernetes api
+      automountServiceAccountToken: false # to stop the token being loaded into conatiner filesystem
+      # runs as a non-root user
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: app # the name of the container - not too important at this stage
+          image: widgetario/web:21.03-v2 # the Docker image to run - this is the full reference with the tag
+          # Doesn't need privilege escalation
+          # needs no Linux capabilities
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+          ports:
+            # - containerPort: 80
+            - containerPort: 5001
+              name: http
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:5001     
+          readinessProbe:
+            httpGet:
+              path: /up
+              # path: /
+              port: http
+            periodSeconds: 5
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /up
+              # path: /
+              port: http
+            periodSeconds: 20
+            initialDelaySeconds: 20
+          envFrom:
+            - configMapRef:
+                name: web-features
+          volumeMounts:
+            - name: logging-config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: api-config
+              mountPath: "/app/secrets"
+              readOnly: true
+      volumes:
+      # volumes are like storage units attached to the Pod -
+      # they're not seen by the container unless explicitly mounted
+        - name: logging-config
+          configMap:
+            name: web-logging
+        - name: api-config
+          secret:
+            secretName: web-api

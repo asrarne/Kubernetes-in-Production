@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-api
+  labels:
+    app: widgetario
+spec:
+  selector:
+    matchLabels:
+        app: widgetario
+        component: stock-api
+  template:
+    metadata:
+      labels: 
+        app: widgetario
+        component: stock-api
+    spec:
+      containers:
+        - name: app
+          image: widgetario/stock-api:21.03
+          envFrom:
+            - secretRef:
+                name: stock-api-connection

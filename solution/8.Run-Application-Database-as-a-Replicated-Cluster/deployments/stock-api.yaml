@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-api
+  labels:
+    app: widgetario
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: widgetario
+      component: stock-api
+  template:
+    metadata:
+      labels:
+        app: widgetario
+        component: stock-api
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: app
+          image: widgetario/stock-api:21.03
+          envFrom:
+            - secretRef:
+                name: stock-api-connection-v2
+          ports:
+            - containerPort: 8080
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 60
+            initialDelaySeconds: 10
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: cache
+              mountPath: "/cache"
+      volumes:
+        - name: cache
+          emptyDir:
+            medium: Memory

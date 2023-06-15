@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  labels: 
+    app: widgetario
+    component: web
+spec:
+  containers:
+    - name: app
+      image: widgetario/web:21.03

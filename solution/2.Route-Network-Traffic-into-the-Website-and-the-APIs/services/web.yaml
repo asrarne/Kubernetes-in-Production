@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app: widgetario
+spec:
+  ports:
+    - port: 8080
+      targetPort: 80
+  selector:
+    component: web
+  type: LoadBalancer
+  # LoadBalancer Services integrate with Kubernetes to create an external IP
+  # address. In the cloud this will be a public IP address, in a local environment
+  # it could be localhost or a local network address.

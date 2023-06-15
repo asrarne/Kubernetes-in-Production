@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-np
+  labels:
+    app: widgetario
+spec:
+  ports:
+    - port: 8080
+      targetPort: 80
+      nodePort: 30080
+      # external Services are also accessible within the cluster. With this spec
+      # external consumers use port 30080, Pod consumers use port 8080, and the
+      # container in the Pod is listening on port 80.
+  selector:
+    component: web
+  type: NodePort
+  # NodePort Services mean every server in the cluster listens on the nodePort
+  # and sends traffic into the Service. You have to use a port in the 30000 range
+  # as a security precaution, so this is not common in production environments.

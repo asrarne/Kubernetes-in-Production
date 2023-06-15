@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: widgetario
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: widgetario
+      component: web
+  template:
+    metadata:
+      labels:
+        app: widgetario
+        component: web
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: logger
+          image: alpine:3.13
+          command: ['sh', '-c', 'tail -f /logs-ro/app.log'] 
+          volumeMounts:
+            - name: logs
+              mountPath: /logs-ro
+              readOnly: true
+        - name: app
+          image: widgetario/web:21.03-v2
+          env:
+            - name: Widgetario__Theme
+              value: dark
+            - name: ASPNETCORE_URLS
+              value: http://+:5001
+          volumeMounts:
+            - name: logging-config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: api-config
+              mountPath: "/app/secrets"
+              readOnly: true
+            - name: logs
+              mountPath: "/logs"
+          ports:
+            - containerPort: 5001
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /up
+              port: http
+            periodSeconds: 5
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /up
+              port: http
+            periodSeconds: 20
+            initialDelaySeconds: 60
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+      volumes:
+        - name: logging-config
+          configMap:
+            name: web-logging
+        - name: api-config
+          secret:
+            secretName: web-api
+        - name: logs
+          emptyDir: {}
+            

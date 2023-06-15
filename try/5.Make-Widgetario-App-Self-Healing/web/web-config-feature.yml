@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-features
+  labels:
+    app: widgetario
+data:
+  Widgetario__Theme: dark

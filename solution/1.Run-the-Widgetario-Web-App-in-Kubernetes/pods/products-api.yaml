@@ -1,0 +1,17 @@
+# Pods are part of the core "v1" API spec
+apiVersion: v1
+kind: Pod
+metadata:
+  # this is the Pod name
+  name: products-api
+  labels:
+    # the app label is used to work with all the widgetario components
+    app: widgetario
+    # the component label is used to work with this Pod
+    component: products-api
+spec:
+  containers:
+    - name: app
+      # this is a public image on Docker Hub
+      image: widgetario/products-api:21.03
+      # nothing else needed yet!

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-db
+  labels:
+    app: widgetario
+spec:
+  selector:
+    matchLabels:
+      app: widgetario
+      component: products-db
+  template:
+    metadata:
+      labels:
+        app: widgetario
+        component: products-db
+    spec:
+      containers:
+        - name: app # the name of the container - not too important at this stage
+          image: widgetario/products-db:21.03 # the Docker image to run - this is the full reference with the tag
+          envFrom:
+            - secretRef:
+                name: products-db-password

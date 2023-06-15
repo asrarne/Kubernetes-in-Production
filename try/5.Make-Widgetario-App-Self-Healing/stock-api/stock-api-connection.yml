@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stock-api-connection
+  labels:
+    app: widgetario
+type: Opaque
+# Kubernetes supports different types of secret - like TLS certificates
+# and Docker registry credentials. "Opaque" means the Secret isn't a 
+# well-known format and doesn't get special handling.
+stringData:
+  POSTGRES_CONNECTION_STRING: "host=products-db port=5432 user=postgres password=asdj3jbcasjd dbname=postgres sslmode=disable"
+  # add more value here in the same format
+  # using "stringData" means the secret is in plain text in the YAML
+  # alternatively you can use base-64 encoded strings

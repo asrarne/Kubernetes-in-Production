@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-db
+  labels:
+    app: widgetario
+spec:
+  selector:
+    matchLabels:
+      app: widgetario
+      component: products-db
+  template:
+    metadata:
+      labels:
+        app: widgetario
+        component: products-db
+    spec:
+      # doesn't use kubernetes api
+      automountServiceAccountToken: false # to stop the token being loaded into conatiner filesystem
+      containers:
+        - name: app # the name of the container - not too important at this stage
+          image: widgetario/products-db:21.03 # the Docker image to run - this is the full reference with the tag
+          envFrom:
+            - secretRef:
+                name: products-db-password
+          ports:
+            - containerPort: 5432
+              name: postgres
+          readinessProbe:
+            tcpSocket:
+              port: postgres
+            periodSeconds: 10
+            initialDelaySeconds: 10
+            failureThreshold: 1
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-h", "localhost"]
+            periodSeconds: 60
+            initialDelaySeconds: 20
+            failureThreshold: 2                 
+      restartPolicy: Always

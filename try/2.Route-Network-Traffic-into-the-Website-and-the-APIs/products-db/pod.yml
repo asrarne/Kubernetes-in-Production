@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: products-db # name of the Pod - you'll use this to manage the component
+  labels:
+    app: widgetario # you should have one label to identify the application,
+    component: products-db # and another one to identify this specific component
+spec:
+  containers:
+    - name: app # the name of the container - not too important at this stage
+      image: widgetario/products-db:21.03 # the Docker image to run - this is the full reference with the tag

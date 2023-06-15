@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-logging # the name is how you'll refer to the ConfigMap in the Pod spec
+  labels:
+    app: widgetario
+data:
+  logging.json: |-
+    {
+      "Serilog": {
+        "MinimumLevel": {
+          "Default": "Warning",
+          "Override": {
+            "WiredBrain": "Information"
+          }
+        }
+      }
+    }
+  # ConfigMaps are like folders surfaced in the container filesystem -
+  # each data item is a file. The item name becomes the filename and 
+  # the content after "|-" becomes the file contents. 
